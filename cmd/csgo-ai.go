@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	goos := runtime.GOOS
 	err := godotenv.Load("../.env")
 	if err != nil {
 		log.Fatal("Error loading .env file. Please rename the '.env.example' template to '.env'")
@@ -17,16 +18,18 @@ func main() {
 	gameid := os.Getenv("GAME_ID")
 	port := os.Getenv("TELNET_PORT")
 	steamdir := os.Getenv("STEAM_DIRECTORY")
-	if steamdir == "" {
-		if runtime.GOOS == "windows" {
-			steamdir = `C:\Program Files (x86)\Steam\Steam.exe`
-		}
-		if runtime.GOOS == "linux" {
-			steamdir = `steam`
-		}
-		if runtime.GOOS == "darwin" {
-			steamdir = `/Applications/Steam.app/Contents/MacOS/steam.sh`
-		}
+	osDefaults := map[string]string{
+		"windows": `C:\Program Files (x86)\Steam\Steam.exe`,
+		"darwin":  `/Applications/Steam.app/Contents/MacOS/steam.sh`,
+		"linux":   `steam`,
 	}
-	startup.StartApp(gameid, steamdir, port)
+	if goos == "windows" || goos == "darwin" || goos == "linux" {
+		if steamdir == "" {
+			startup.StartApp(gameid, osDefaults[goos], port)
+		} else {
+			startup.StartApp(gameid, steamdir, port)
+		}
+	} else {
+		log.Fatal("Unsupported Operating System")
+	}
 }
