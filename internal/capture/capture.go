@@ -1,0 +1,5 @@
+package capture
+
+func begin() {
+
+}
