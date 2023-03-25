@@ -1,5 +1,5 @@
 module startup
 
-go 1.19
+go 1.20
 
 replace internal/telnet => ../telnet
