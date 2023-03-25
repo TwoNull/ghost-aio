@@ -19,3 +19,9 @@
 
 # Go workspace file
 go.work
+
+# Wakatime
+.wakatime-project
+
+# Environment Variables
+.env
