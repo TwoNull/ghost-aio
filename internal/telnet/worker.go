@@ -2,15 +2,14 @@ package telnet
 
 import (
 	"bufio"
-	"log"
 	"net"
 )
 
-func TelnetWorker(conn net.Conn) {
+func ReadWorker(conn net.Conn, consoleOut chan string) {
 	scanner := bufio.NewScanner(conn)
 	scanner.Split(bufio.ScanLines)
 	for {
 		scanner.Scan()
-		log.Println(scanner.Text())
+		consoleOut <- scanner.Text()
 	}
 }
