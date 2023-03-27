@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/0xdarktwo/ghost-aio/internal/startup"
 	"log"
 	"os"
 	"runtime"
-	"startup"
 
 	"github.com/joho/godotenv"
 )

@@ -12,7 +12,7 @@ func InitConnection(address string) net.Conn {
 	if conn == nil {
 		for i := 1; i < 11; i++ {
 			time.Sleep(6000 * time.Millisecond)
-			log.Println("Connecting | Attempt " + fmt.Sprint(i) + " of 10")
+			log.Println("Connecting to Client | Attempt " + fmt.Sprint(i) + " of 10")
 			conn, err = net.Dial("tcp", address)
 			if conn != nil {
 				break

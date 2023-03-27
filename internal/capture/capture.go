@@ -1,5 +1,0 @@
-package capture
-
-func begin() {
-
-}
