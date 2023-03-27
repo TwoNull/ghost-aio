@@ -26,3 +26,9 @@ go.work.sum
 
 # Environment Variables
 .env
+
+# Goland
+.idea
+
+# MacOS
+.DS_Store

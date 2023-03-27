@@ -14,7 +14,7 @@ func Run(id string, steamdir string, processName string, telnetport string) {
 	startApp(id, steamdir, telnetport)
 	processes := window.CheckLaunch(processName)
 	log.Print(processes)
-	conn := telnet.InitConnection("127.0.0.1:2121")
+	conn := telnet.InitConnection("127.0.0.1:" + telnetport)
 	consoleOut := make(chan string)
 	wg.Add(1)
 	go telnet.ReadWorker(conn, consoleOut)
