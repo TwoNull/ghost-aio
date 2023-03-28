@@ -12,6 +12,7 @@ require (
 	github.com/andybrewer/mack v0.0.0-20220307193339-22e922cc18af // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/lxn/win v0.0.0-20210218163916-a377121e959e // indirect
+	github.com/mrazza/gonav v0.0.0-20200609050529-9734ca49d253 // indirect
 	github.com/otiai10/gosseract v2.2.1+incompatible // indirect
 	github.com/robotn/gohook v0.31.3 // indirect
 	github.com/robotn/xgb v0.0.0-20190912153532-2cb92d044934 // indirect
