@@ -32,3 +32,6 @@ go.work.sum
 
 # MacOS
 .DS_Store
+
+# Level Files
+nav

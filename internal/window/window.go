@@ -2,7 +2,6 @@ package window
 
 import "C"
 import (
-	"errors"
 	"fmt"
 	"log"
 	"runtime"
@@ -30,7 +29,7 @@ func CheckLaunch(processName string) []int32 {
 	return processArr
 }
 
-func SetWindowBounds(processID int32) error {
+func SetWindowBounds(processID int32) {
 	var x, y, w, h, screenW, screenH int
 	err := robotgo.ActivePID(processID)
 	if err != nil {
@@ -51,6 +50,7 @@ func SetWindowBounds(processID int32) error {
 		h, err = strconv.Atoi(parsedRes[2])
 		x, err = strconv.Atoi(parsedRes[3])
 		y, err = strconv.Atoi(parsedRes[4])
+		y = y + h - 720
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -61,18 +61,13 @@ func SetWindowBounds(processID int32) error {
 	log.Println([4]int{x, y, w, h})
 	log.Println([2]int{screenW, screenH})
 	if x+w > screenW || y+h > screenH {
-		return errors.New("Window Extends Outside Screen Bounds")
+		log.Fatal("Window Extends Outside Screen Bounds")
 	}
 	bounds = [4]int{x, y, w, h}
 	screen = [2]int{screenW, screenH}
-	return nil
 }
 
-func GetTopPixel(processID int32) string {
-	err := robotgo.ActivePID(processID)
-	if err != nil {
-		log.Fatal(err)
-	}
-	topColor := robotgo.GetPixelColor(bounds[0], bounds[1])
-	return topColor
+func GetPlayButton(processID int32) string {
+	buttonColor := robotgo.GetPixelColor(bounds[0]+125, bounds[1]+bounds[3]-625)
+	return buttonColor
 }

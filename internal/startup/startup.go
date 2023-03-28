@@ -1,51 +1,49 @@
 package startup
 
 import (
-	"errors"
-	"github.com/0xdarktwo/ghost-aio/internal/telnet"
-	"github.com/0xdarktwo/ghost-aio/internal/window"
 	"log"
 	"os/exec"
 	"sync"
+	"time"
+
+	"github.com/0xdarktwo/ghost-aio/internal/telnet"
+	"github.com/0xdarktwo/ghost-aio/internal/window"
 )
 
 var wg sync.WaitGroup
 
-func Run(id string, steamdir string, processName string, telnetport string) {
-	processID, err := startApp(id, steamdir, telnetport, processName)
-	if err != nil {
-		log.Fatal(err)
-	}
+func Run(id string, steamdir string, processName string, telnetport string, width string, height string) {
+	processID := startApp(id, steamdir, telnetport, processName, width, height)
 	conn := telnet.InitConnection("127.0.0.1:" + telnetport)
 	consoleOut := make(chan string)
-	err = window.SetWindowBounds(processID)
-	if err != nil {
-		log.Fatal(err)
-	}
+	window.SetWindowBounds(processID)
 	wg.Add(1)
 	go telnet.ReadWorker(conn, consoleOut)
-	err = initMM(processID)
+	go telnet.EventWorker(consoleOut)
 	wg.Wait()
 }
 
 func initMM(processID int32) error {
-	log.Println(window.GetTopPixel(processID))
+	for {
+		initMMStep(processID)
+		time.Sleep(1000 * time.Millisecond)
+	}
+}
+
+func initMMStep(processID int32) error {
+	log.Println(window.GetPlayButton(processID))
 	return nil
 }
 
-/*func initMMStep(processID int32) error {
-
-}*/
-
-func startApp(id string, steamdir string, telnetport string, processName string) (int32, error) {
-	cmd := exec.Command(steamdir, "-applaunch", id, "-windowed", "-novid", "-nojoy", "-noborder", "-w", "1280", "-h", "720", "-x", "0", "-y", "0", "-refresh", "30", "-netconport", telnetport)
+func startApp(id string, steamdir string, telnetport string, processName string, width string, height string) int32 {
+	cmd := exec.Command(steamdir, "-applaunch", id, "-windowed", "-novid", "-nojoy", "-noborder", "-w", width, "-h", height, "-x", "0", "-y", "0", "-refresh", "30", "-condebug", "-netconport", telnetport)
 	err := cmd.Run()
 	if err != nil {
-		return 0, errors.New("Error starting app (Steam Not in Default Directory?)")
+		log.Fatal("Error starting app (Steam Not in Default Directory?)")
 	}
 	processes := window.CheckLaunch(processName)
-	if len(processes) >= 1 {
-		return processes[0], nil
+	if len(processes) == 0 {
+		log.Fatal("No CS:GO Instances Found")
 	}
-	return 0, errors.New("No CS:GO Instances Found")
+	return processes[0]
 }
