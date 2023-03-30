@@ -8,23 +8,24 @@ import (
 	"strconv"
 
 	"github.com/andygrunwald/vdf"
-	_ "github.com/lukegb/dds"
 	"github.com/mrazza/gonav"
+	_ "github.com/robroyd/dds"
 )
 
 var dds image.Image
 var mesh gonav.NavMesh
-var scale float64
-var posX int
-var posY int
+var rscale float64
+var tlx int
+var tly int
 
 func InitPathing(mapName string) {
 	steamapps := os.Getenv("STEAMAPPS_PATH")
 	mesh = loadMesh(steamapps, mapName)
-	dds, posX, posY, scale = loadRadar(steamapps, mapName)
-	log.Println(posX)
-	log.Println(posY)
-	log.Println(scale)
+	dds, tlx, tly, rscale = loadRadar(steamapps, mapName)
+}
+
+func getInGameRadar() {
+
 }
 
 func loadMesh(steamapps string, mapName string) gonav.NavMesh {
@@ -51,9 +52,10 @@ func loadRadar(steamapps string, mapName string) (image.Image, int, int, float64
 	if err != nil {
 		log.Fatal("Error Opening Radar dds File for Current Map")
 	}
-	ddsImage, _, err := image.Decode(dds)
+	ddsImage, format, err := image.Decode(dds)
 	if err != nil {
-		log.Fatal("Error Decoding Radar dds File for Current Map")
+		log.Println(format)
+		log.Fatal(err)
 	}
 	txt, err := os.Open(txtPath)
 	if err != nil {
@@ -64,9 +66,9 @@ func loadRadar(steamapps string, mapName string) (image.Image, int, int, float64
 	if err != nil {
 		log.Fatal("Error Parsing Radar vdf File for Current Map")
 	}
-	posX, _ = strconv.Atoi(txtMap[mapName].(map[string]string)["pos_x"])
-	posY, _ = strconv.Atoi(txtMap[mapName].(map[string]string)["pos_y"])
-	scale, _ = strconv.ParseFloat(txtMap[mapName].(map[string]string)["scale"], 64)
+	posX, _ = strconv.Atoi(txtMap[mapName].(map[string]interface{})["pos_x"].(string))
+	posY, _ = strconv.Atoi(txtMap[mapName].(map[string]interface{})["pos_y"].(string))
+	scale, _ = strconv.ParseFloat(txtMap[mapName].(map[string]interface{})["scale"].(string), 64)
 	if &posX == nil || &posY == nil || &scale == nil {
 		log.Fatal("Error Collecting Radar vdf Values for Current Map")
 	}
