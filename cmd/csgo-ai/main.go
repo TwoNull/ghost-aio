@@ -17,9 +17,9 @@ func main() {
 		log.Fatal("Error loading .env file. Please rename the '.env.example' template to '.env'")
 	}
 	gameid := os.Getenv("GAME_ID")
-	port := os.Getenv("TELNET_PORT")
 	steamdir := os.Getenv("STEAM_PATH")
 	steamapps := os.Getenv("STEAMAPPS_PATH")
+	port := os.Getenv("TELNET_PORT")
 	width := os.Getenv("WIDTH")
 	height := os.Getenv("HEIGHT")
 	homedir, err := os.UserHomeDir()

@@ -1,11 +1,17 @@
 package pathing
 
 import (
+	"github.com/0xdarktwo/ghost-aio/internal/telnet"
+	"github.com/0xdarktwo/ghost-aio/internal/window"
+	"github.com/nfnt/resize"
 	"image"
+	"image/jpeg"
 	"log"
+	"net"
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/andygrunwald/vdf"
 	"github.com/mrazza/gonav"
@@ -13,6 +19,8 @@ import (
 )
 
 var dds image.Image
+var ddsw int
+var ddsh int
 var mesh gonav.NavMesh
 var rscale float64
 var tlx int
@@ -21,11 +29,20 @@ var tly int
 func InitPathing(mapName string) {
 	steamapps := os.Getenv("STEAMAPPS_PATH")
 	mesh = loadMesh(steamapps, mapName)
-	dds, tlx, tly, rscale = loadRadar(steamapps, mapName)
+	dds, ddsw, ddsh, tlx, tly, rscale = loadRadar(steamapps, mapName)
 }
 
-func getInGameRadar() {
-
+func GetInGameRadar(conn *net.Conn) {
+	telnet.Write(conn, "name\n")
+	time.Sleep(100 * time.Millisecond)
+	radar := window.GetWindow(8, 45, 243, 243)
+	resizedImg := resize.Resize(uint(ddsw), uint(ddsh), radar, resize.Bicubic)
+	f, err := os.Create("CSGORadar0xDarkTwo.jpg")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	jpeg.Encode(f, resizedImg, nil)
 }
 
 func loadMesh(steamapps string, mapName string) gonav.NavMesh {
@@ -42,7 +59,7 @@ func loadMesh(steamapps string, mapName string) gonav.NavMesh {
 	return mesh
 }
 
-func loadRadar(steamapps string, mapName string) (image.Image, int, int, float64) {
+func loadRadar(steamapps string, mapName string) (image.Image, int, int, int, int, float64) {
 	var posX int
 	var posY int
 	var scale float64
@@ -52,11 +69,11 @@ func loadRadar(steamapps string, mapName string) (image.Image, int, int, float64
 	if err != nil {
 		log.Fatal("Error Opening Radar dds File for Current Map")
 	}
-	ddsImage, format, err := image.Decode(dds)
+	ddsImage, _, err := image.Decode(dds)
 	if err != nil {
-		log.Println(format)
-		log.Fatal(err)
+		log.Fatal("Error Decoding Radar dds File for Current Map")
 	}
+	bounds := ddsImage.Bounds()
 	txt, err := os.Open(txtPath)
 	if err != nil {
 		log.Fatal("Error Opening Radar vdf File for Current Map")
@@ -72,5 +89,5 @@ func loadRadar(steamapps string, mapName string) (image.Image, int, int, float64
 	if &posX == nil || &posY == nil || &scale == nil {
 		log.Fatal("Error Collecting Radar vdf Values for Current Map")
 	}
-	return ddsImage, posX, posY, scale
+	return ddsImage, bounds.Max.X, bounds.Max.Y, posX, posY, scale
 }

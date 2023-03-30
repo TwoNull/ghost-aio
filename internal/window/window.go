@@ -3,6 +3,7 @@ package window
 import "C"
 import (
 	"fmt"
+	"image"
 	"log"
 	"runtime"
 	"strconv"
@@ -13,8 +14,21 @@ import (
 	"github.com/go-vgo/robotgo"
 )
 
-var screen [2]int
-var bounds [4]int
+type screenSize struct {
+	x int
+	y int
+}
+
+type windowSize struct {
+	x int
+	y int
+	w int
+	h int
+}
+
+var screen screenSize
+var window windowSize
+var pid int32
 
 func CheckLaunch(processName string) []int32 {
 	var err error
@@ -63,11 +77,20 @@ func SetWindowBounds(processID int32) {
 	if x+w > screenW || y+h > screenH {
 		log.Fatal("Window Extends Outside Screen Bounds")
 	}
-	bounds = [4]int{x, y, w, h}
-	screen = [2]int{screenW, screenH}
+	window = windowSize{
+		x,
+		y,
+		w,
+		h,
+	}
+	screen = screenSize{
+		x,
+		y,
+	}
+	pid = processID
 }
 
-func GetPlayButton(processID int32) string {
-	buttonColor := robotgo.GetPixelColor(bounds[0]+125, bounds[1]+bounds[3]-625)
-	return buttonColor
+func GetWindow(x int, y int, w int, h int) image.Image {
+	robotgo.ActivePID(pid)
+	return robotgo.CaptureImg(x+window.x, y+window.y, w, h)
 }
