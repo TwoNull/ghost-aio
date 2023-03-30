@@ -16,8 +16,8 @@ func EventReader(wg *sync.WaitGroup, conn *net.Conn) {
 	scanner := bufio.NewScanner(*conn)
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
-		log.Println(scanner.Bytes())
 		line := scanner.Text()
+		log.Println(line)
 		length := len(line)
 		if length > 11 && line[length-11:length] == " connected." {
 			continue

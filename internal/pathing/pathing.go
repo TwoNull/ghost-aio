@@ -33,7 +33,7 @@ func InitPathing(mapName string) {
 }
 
 func GetInGameRadar(conn *net.Conn) {
-	telnet.Write(conn, "name\n")
+	telnet.Write(conn, "name")
 	time.Sleep(100 * time.Millisecond)
 	radar := window.GetWindow(8, 45, 243, 243)
 	resizedImg := resize.Resize(uint(ddsw), uint(ddsh), radar, resize.Bicubic)
