@@ -2,9 +2,10 @@ package telnet
 
 import (
 	"bufio"
-	"github.com/0xdarktwo/ghost-aio/internal/pathing"
 	"log"
 	"net"
+
+	"github.com/0xdarktwo/ghost-aio/internal/pathing"
 )
 
 func ReadWorker(conn net.Conn, consoleOut chan string) {

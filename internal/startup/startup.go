@@ -24,9 +24,9 @@ func Run(id string, telnetport string, width string, height string) {
 }
 
 func startApp(id string, telnetport string, width string, height string) int32 {
-	steamdir := os.Getenv("STEAM_APP_PATH")
+	steamdir := os.Getenv("STEAM_PATH")
 	procName := os.Getenv("PROCESS_NAME")
-	cmd := exec.Command(steamdir, "-applaunch", id, "-windowed", "-novid", "-nojoy", "-noborder", "-w", width, "-h", height, "-x", "0", "-y", "0", "-refresh", "30", "-condebug", "-netconport", telnetport)
+	cmd := exec.Command(steamdir, "-applaunch", id, "-windowed", "-novid", "-nojoy", "-noborder", "-w", width, "-h", height, "-x", "0", "-y", "0", "-refresh", "30", "-netconport", telnetport)
 	err := cmd.Run()
 	if err != nil {
 		log.Fatal("Error starting app (Steam Not in Default Directory?)")

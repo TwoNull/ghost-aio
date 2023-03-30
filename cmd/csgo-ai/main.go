@@ -18,8 +18,8 @@ func main() {
 	}
 	gameid := os.Getenv("GAME_ID")
 	port := os.Getenv("TELNET_PORT")
-	steamdir := os.Getenv("STEAM_APP_PATH")
-	steamapps := os.Getenv("STEAM_GAMES_PATH")
+	steamdir := os.Getenv("STEAM_PATH")
+	steamapps := os.Getenv("STEAMAPPS_PATH")
 	width := os.Getenv("WIDTH")
 	height := os.Getenv("HEIGHT")
 	homedir, err := os.UserHomeDir()
@@ -28,20 +28,20 @@ func main() {
 		"darwin":  {`/Applications/Steam.app/Contents/MacOS/steam_osx`, homedir + `/Library/Application Support/Steam/steamapps/common`, "csgo_osx64"},
 		"linux":   {`steam`, homedir + `/.steam/steam/SteamApps/common/`, "csgo"},
 	}
-	if width == "" {
-		width = "1280"
-	}
-	if height == "" {
-		height = "720"
-	}
-	if steamdir == "" {
-		os.Setenv("STEAM_APP_PATH", osDefaults[goos][0])
-	}
-	if steamapps == "" {
-		os.Setenv("STEAM_GAMES_PATH", osDefaults[goos][1])
-	}
 	os.Setenv("PROCESS_NAME", osDefaults[goos][2])
 	if goos == "windows" || goos == "darwin" || goos == "linux" {
+		if width == "" {
+			width = "1280"
+		}
+		if height == "" {
+			height = "720"
+		}
+		if steamdir == "" {
+			os.Setenv("STEAM_PATH", osDefaults[goos][0])
+		}
+		if steamapps == "" {
+			os.Setenv("STEAMAPPS_PATH", osDefaults[goos][1])
+		}
 		startup.Run(gameid, port, width, height)
 	} else {
 		log.Fatal("Unsupported Operating System")
