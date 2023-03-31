@@ -13,9 +13,9 @@ import (
 )
 
 func EventListener(wg *sync.WaitGroup, conn *tel.Conn) {
-	out := make(chan []byte)
-	go consoleReader(out, conn)
-	for lineBytes := range out {
+	output := make(chan []byte)
+	go consoleReader(output, conn)
+	for lineBytes := range output {
 		line := string(lineBytes)
 		log.Println(line)
 		length := len(line)
@@ -29,11 +29,15 @@ func EventListener(wg *sync.WaitGroup, conn *tel.Conn) {
 		if len(line) > 16 && line[0:17] == "CCSGO_BlurTarget" {
 			log.Println("Team choice dialogue")
 		}
+		if line == "Can't use cheat command getpos in multiplayer, unless the server has sv_cheats set to 1." {
+			log.Println("Testing Radar")
+			go testGetRadar(conn)
+		}
 	}
 	log.Println("Event Listener Terminated")
 }
 
-func consoleReader(out chan []byte, conn *tel.Conn) {
+func consoleReader(output chan []byte, conn *tel.Conn) {
 	rdr := bufio.NewReader(conn)
 	var line, cont []byte
 	var prefix bool
@@ -45,7 +49,7 @@ func consoleReader(out chan []byte, conn *tel.Conn) {
 			line = append(line, cont...)
 		}
 		if line != nil {
-			out <- line
+			output <- line
 		}
 		if err == io.EOF {
 			break
@@ -54,6 +58,6 @@ func consoleReader(out chan []byte, conn *tel.Conn) {
 }
 
 func testGetRadar(conn *tel.Conn) {
-	time.Sleep(5 * time.Second)
+	time.Sleep(2 * time.Second)
 	pathing.GetInGameRadar(conn)
 }
