@@ -1,38 +1,17 @@
 package telnet
 
 import (
-	tel "github.com/aprice/telnet"
 	"log"
-	"time"
+
+	tel "github.com/reiver/go-telnet"
 )
 
-var blocked = false
-
-func Write(w *tel.Connection, data string) int {
-	for {
-		if !IsBlocked() {
-			Block()
-			buf := []byte(data + "\n")
-			log.Println("Writing to Console")
-			n, err := (*w).Write(buf)
-			if err != nil {
-				log.Fatal(err)
-			}
-			return n
-			Unblock()
-		}
-		time.Sleep(1 * time.Millisecond)
+func Write(w *tel.Conn, data string) int {
+	buf := []byte(data + "\n")
+	log.Println("Writing to Console")
+	n, err := (*w).Write(buf)
+	if err != nil {
+		log.Fatal(err)
 	}
-}
-
-func IsBlocked() bool {
-	return blocked
-}
-
-func Block() {
-	blocked = true
-}
-
-func Unblock() {
-	blocked = false
+	return n
 }

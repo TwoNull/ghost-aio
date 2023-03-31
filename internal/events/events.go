@@ -2,17 +2,17 @@ package events
 
 import (
 	"bufio"
-	"github.com/0xdarktwo/ghost-aio/internal/telnet"
 	"io"
 	"log"
 	"sync"
 	"time"
 
+	tel "github.com/reiver/go-telnet"
+
 	"github.com/0xdarktwo/ghost-aio/internal/pathing"
-	tel "github.com/aprice/telnet"
 )
 
-func EventListener(wg *sync.WaitGroup, conn *tel.Connection) {
+func EventListener(wg *sync.WaitGroup, conn *tel.Conn) {
 	out := make(chan []byte)
 	go consoleReader(out, conn)
 	for lineBytes := range out {
@@ -29,44 +29,31 @@ func EventListener(wg *sync.WaitGroup, conn *tel.Connection) {
 		if len(line) > 16 && line[0:17] == "CCSGO_BlurTarget" {
 			log.Println("Team choice dialogue")
 		}
-		if line == "Can't use cheat command getpos in multiplayer, unless the server has sv_cheats set to 1." {
-			log.Println("Testing Radar")
-			testGetRadar(conn)
-		}
 	}
 	log.Println("Event Listener Terminated")
 }
 
-func consoleReader(out chan []byte, conn *tel.Connection) {
+func consoleReader(out chan []byte, conn *tel.Conn) {
 	rdr := bufio.NewReader(conn)
 	var line, cont []byte
 	var prefix bool
 	var err error
 	for {
-		if telnet.IsBlocked() {
+		line, prefix, err = rdr.ReadLine()
+		for prefix && err == nil {
+			cont, prefix, err = rdr.ReadLine()
+			line = append(line, cont...)
+		}
+		if line != nil {
+			out <- line
+		}
+		if err == io.EOF {
 			break
 		}
-		if !telnet.IsBlocked() {
-			telnet.Block()
-			log.Println("Reading from Console")
-			line, prefix, err = rdr.ReadLine()
-			for prefix && err == nil {
-				cont, prefix, err = rdr.ReadLine()
-				line = append(line, cont...)
-			}
-			if line != nil {
-				out <- line
-			}
-			if err == io.EOF {
-				break
-			}
-			telnet.Unblock()
-		}
-		time.Sleep(100 * time.Millisecond)
 	}
 }
 
-func testGetRadar(conn *tel.Connection) {
+func testGetRadar(conn *tel.Conn) {
 	time.Sleep(5 * time.Second)
 	pathing.GetInGameRadar(conn)
 }

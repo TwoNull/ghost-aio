@@ -1,6 +1,5 @@
 package window
 
-import "C"
 import (
 	"fmt"
 	"image"

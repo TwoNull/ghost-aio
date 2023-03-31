@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/andygrunwald/vdf"
-	tel "github.com/aprice/telnet"
 	"github.com/mrazza/gonav"
 	"github.com/nfnt/resize"
+	tel "github.com/reiver/go-telnet"
 	_ "github.com/robroyd/dds"
 
 	"github.com/0xdarktwo/ghost-aio/internal/telnet"
@@ -33,7 +33,7 @@ func InitPathing(mapName string) {
 	dds, ddsw, ddsh, tlx, tly, rscale = loadRadar(steamapps, mapName)
 }
 
-func GetInGameRadar(conn *tel.Connection) {
+func GetInGameRadar(conn *tel.Conn) {
 	ddsw, ddsh = 1024, 1024
 	telnet.Write(conn, "+score")
 	time.Sleep(100 * time.Millisecond)

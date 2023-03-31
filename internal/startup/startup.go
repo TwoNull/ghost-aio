@@ -1,14 +1,15 @@
 package startup
 
 import (
-	"github.com/0xdarktwo/ghost-aio/internal/events"
-	tel "github.com/aprice/telnet"
 	"log"
 	"os"
 	"os/exec"
 	"sync"
 	"time"
 
+	tel "github.com/reiver/go-telnet"
+
+	"github.com/0xdarktwo/ghost-aio/internal/events"
 	"github.com/0xdarktwo/ghost-aio/internal/window"
 )
 
@@ -16,18 +17,13 @@ var wg sync.WaitGroup
 
 func Run(id, port, width, height string) {
 	processID := startApp(id, width, port, height)
-	conn, err := tel.Dial("127.0.0.1:" + port)
-	if conn == nil {
-		for i := 1; i < 11; i++ {
-			time.Sleep(6000 * time.Millisecond)
-			conn, err = tel.Dial("127.0.0.1:" + port)
-			if conn != nil {
-				break
-			}
-		}
-	}
+	err := connectionTest("127.0.0.1:" + port)
 	if err != nil {
 		log.Fatal("Source Telnet server did not respond within 60 seconds.")
+	}
+	conn, err := tel.DialTo("127.0.0.1:" + port)
+	if err != nil {
+		log.Fatal("Connection could not be established.")
 	}
 	window.SetWindowBounds(processID)
 	wg.Add(1)
@@ -48,4 +44,19 @@ func startApp(id, width, port, height string) int32 {
 		log.Fatal("No CS:GO Instances Found")
 	}
 	return processes[0]
+}
+
+func connectionTest(address string) (err error) {
+	caller := tel.StandardCaller
+	err = tel.DialToAndCall(address, caller)
+	if err != nil {
+		for i := 1; i < 11; i++ {
+			time.Sleep(6000 * time.Millisecond)
+			err = tel.DialToAndCall(address, caller)
+			if err == nil {
+				break
+			}
+		}
+	}
+	return
 }
