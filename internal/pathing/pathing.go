@@ -1,21 +1,22 @@
 package pathing
 
 import (
-	"github.com/0xdarktwo/ghost-aio/internal/telnet"
-	"github.com/0xdarktwo/ghost-aio/internal/window"
-	"github.com/nfnt/resize"
 	"image"
 	"image/jpeg"
 	"log"
-	"net"
 	"os"
 	"path/filepath"
 	"strconv"
 	"time"
 
 	"github.com/andygrunwald/vdf"
+	tel "github.com/aprice/telnet"
 	"github.com/mrazza/gonav"
+	"github.com/nfnt/resize"
 	_ "github.com/robroyd/dds"
+
+	"github.com/0xdarktwo/ghost-aio/internal/telnet"
+	"github.com/0xdarktwo/ghost-aio/internal/window"
 )
 
 var dds image.Image
@@ -32,8 +33,9 @@ func InitPathing(mapName string) {
 	dds, ddsw, ddsh, tlx, tly, rscale = loadRadar(steamapps, mapName)
 }
 
-func GetInGameRadar(conn *net.Conn) {
-	telnet.Write(conn, "name")
+func GetInGameRadar(conn *tel.Connection) {
+	ddsw, ddsh = 1024, 1024
+	telnet.Write(conn, "+score")
 	time.Sleep(100 * time.Millisecond)
 	radar := window.GetWindow(8, 45, 243, 243)
 	resizedImg := resize.Resize(uint(ddsw), uint(ddsh), radar, resize.Bicubic)
@@ -49,6 +51,7 @@ func loadMesh(steamapps string, mapName string) gonav.NavMesh {
 	mapPath := filepath.Join(filepath.Dir(steamapps), "common", "Counter-Strike Global Offensive", "csgo", "maps", mapName+".nav")
 	f, err := os.Open(mapPath)
 	if err != nil {
+		log.Println(mapName)
 		log.Fatal("Error Opening .nav File for Current Map.")
 	}
 	parser := gonav.Parser{Reader: f}

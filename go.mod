@@ -5,9 +5,11 @@ go 1.20
 require (
 	github.com/andybrewer/mack v0.0.0-20220307193339-22e922cc18af
 	github.com/andygrunwald/vdf v1.1.0
+	github.com/aprice/telnet v0.0.0-20171226235516-d54e7db45615
 	github.com/go-vgo/robotgo v0.100.10
 	github.com/joho/godotenv v1.5.1
 	github.com/mrazza/gonav v0.0.0-20200609050529-9734ca49d253
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/robroyd/dds v0.0.0-20221227152439-75471f84d293
 )
 
@@ -15,10 +17,7 @@ require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/lxn/win v0.0.0-20210218163916-a377121e959e // indirect
-	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/otiai10/gosseract v2.2.1+incompatible // indirect
-	github.com/reiver/go-oi v1.0.0 // indirect
-	github.com/reiver/go-telnet v0.0.0-20180421082511-9ff0b2ab096e // indirect
 	github.com/robotn/gohook v0.31.3 // indirect
 	github.com/robotn/xgb v0.0.0-20190912153532-2cb92d044934 // indirect
 	github.com/robotn/xgbutil v0.0.0-20190912154524-c861d6f87770 // indirect
@@ -29,6 +28,8 @@ require (
 	github.com/vcaesar/imgo v0.30.0 // indirect
 	github.com/vcaesar/keycode v0.10.0 // indirect
 	github.com/vcaesar/tt v0.20.0 // indirect
+	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect
-	golang.org/x/sys v0.0.0-20211123173158-ef496fb156ab // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/term v0.6.0 // indirect
 )

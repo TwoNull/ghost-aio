@@ -2,11 +2,12 @@ package startup
 
 import (
 	"github.com/0xdarktwo/ghost-aio/internal/events"
-	"github.com/0xdarktwo/ghost-aio/internal/telnet"
+	tel "github.com/aprice/telnet"
 	"log"
 	"os"
 	"os/exec"
 	"sync"
+	"time"
 
 	"github.com/0xdarktwo/ghost-aio/internal/window"
 )
@@ -15,10 +16,22 @@ var wg sync.WaitGroup
 
 func Run(id, port, width, height string) {
 	processID := startApp(id, width, port, height)
-	conn := telnet.Connect("127.0.0.1:" + port)
+	conn, err := tel.Dial("127.0.0.1:" + port)
+	if conn == nil {
+		for i := 1; i < 11; i++ {
+			time.Sleep(6000 * time.Millisecond)
+			conn, err = tel.Dial("127.0.0.1:" + port)
+			if conn != nil {
+				break
+			}
+		}
+	}
+	if err != nil {
+		log.Fatal("Source Telnet server did not respond within 60 seconds.")
+	}
 	window.SetWindowBounds(processID)
 	wg.Add(1)
-	go events.EventReader(&wg, &conn)
+	go events.EventListener(&wg, conn)
 	wg.Wait()
 }
 
