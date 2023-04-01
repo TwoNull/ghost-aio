@@ -1,33 +1,27 @@
 package startup
 
 import (
+	"github.com/0xdarktwo/ghost-aio/internal/events"
+	"github.com/0xdarktwo/ghost-aio/internal/sourceio"
+	tel "github.com/reiver/go-telnet"
 	"log"
 	"os"
 	"os/exec"
 	"sync"
-	"time"
 
-	tel "github.com/reiver/go-telnet"
-
-	"github.com/0xdarktwo/ghost-aio/internal/events"
 	"github.com/0xdarktwo/ghost-aio/internal/window"
 )
 
 var wg sync.WaitGroup
+var sourceCaller struct{}
 
 func Run(id, port, width, height string) {
+	log.Println("Started")
 	processID := startApp(id, width, port, height)
-	err := connectionTest("127.0.0.1:" + port)
-	if err != nil {
-		log.Fatal("Source Telnet server did not respond within 60 seconds.")
-	}
-	conn, err := tel.DialTo("127.0.0.1:" + port)
-	if err != nil {
-		log.Fatal("Connection could not be established.")
-	}
+	go establishConnection("127.0.0.1:" + port)
 	window.SetWindowBounds(processID)
 	wg.Add(1)
-	go events.EventListener(&wg, conn)
+	go events.EventListener(&wg)
 	wg.Wait()
 }
 
@@ -46,17 +40,10 @@ func startApp(id, width, port, height string) int32 {
 	return processes[0]
 }
 
-func connectionTest(address string) (err error) {
-	caller := tel.StandardCaller
-	err = tel.DialToAndCall(address, caller)
+func establishConnection(address string) {
+	caller := sourceio.SourceCaller
+	err := tel.DialToAndCall(address, caller)
 	if err != nil {
-		for i := 1; i < 11; i++ {
-			time.Sleep(6000 * time.Millisecond)
-			err = tel.DialToAndCall(address, caller)
-			if err == nil {
-				break
-			}
-		}
+		log.Fatal(err)
 	}
-	return
 }
