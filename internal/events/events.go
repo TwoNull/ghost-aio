@@ -14,8 +14,8 @@ func EventListener(wg *sync.WaitGroup) {
 	}
 	log.Println("Event Listener Terminated")
 }
+
 func sendInput() {
 	time.Sleep(1000 * time.Millisecond)
-	sourceio.Input <- "name"
-	close(sourceio.Input)
+	sourceio.QueueMessage("name")
 }
