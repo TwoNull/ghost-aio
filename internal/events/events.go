@@ -9,8 +9,8 @@ import (
 
 func EventListener(wg *sync.WaitGroup) {
 	go sendInput()
-	for line := range sourceio.Output {
-		log.Println(line)
+	for outByte := range sourceio.Output {
+		log.Println("     BYTE: " + string(outByte))
 	}
 	log.Println("Event Listener Terminated")
 }
